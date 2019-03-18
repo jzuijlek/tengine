@@ -12,8 +12,11 @@ RUN apt-get update \
         wget \
         gcc \
         make \
+        git \
+        libgeoip-dev \
     && wget https://github.com/alibaba/tengine/archive/${TENGINE_VERSION}.tar.gz \
     && tar -zxvf ${TENGINE_VERSION}.tar.gz && rm ${TENGINE_VERSION}.tar.gz \
+    && git clone https://github.com/agentzh/headers-more-nginx-module tengine-${TENGINE_VERSION}/modules/headers-more-nginx-module \
     && mkdir /usr/local/nginx \
     && mkdir /var/tmp/nginx \
     && cd tengine-${TENGINE_VERSION} \
@@ -29,9 +32,11 @@ RUN apt-get update \
         --http-fastcgi-temp-path=/var/tmp/nginx/fastcgi \
         --http-scgi-temp-path=/var/tmp/nginx/scgi \
         --http-uwsgi-temp-path=/var/tmp/nginx/uwsgi \
+        --with-http_geoip_module \
         --with-ipv6 \
         --with-http_v2_module \
         --with-http_ssl_module \
+        --add-module=modules/headers-more-nginx-module\
     && make && make install \
     && cd ../ && rm -rf tengine-${TENGINE_VERSION} \
     && useradd -s /sbin/nologin nginx \
